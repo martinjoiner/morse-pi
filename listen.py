@@ -3,7 +3,7 @@
 import time
 import wiringpi
 from datetime import date
-from words import animals
+from words import words
 from morsecode import alphabet
 import requests
 
@@ -78,14 +78,16 @@ def sendWord(word):
 
 def sendTodaysWord():
   today = date.today()
+  month = today.strftime("%b")
   day = int(today.strftime("%d"))
 
   print('Today is day ' + str(day))
-  sendWord(animals[day-1])
+  todaysWord = words[month][day-1]
+  sendWord(todaysWord)
 
 
 def recordPing():
-  url = 'http://morse.butterscotchworld.co.uk/ping/index.php'  
+  url = 'http://morse.pelmo.uk/ping/index.php'  
   headers = {
     'Content-Type': 'multipart/form-data',      
     'User-Agent': 'Morse code RaspberryPi'
