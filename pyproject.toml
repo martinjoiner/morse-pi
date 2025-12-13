@@ -1,0 +1,3 @@
+[tool.pylint."MESSAGES CONTROL"]
+disable = ["missing-module-docstring"]
+indent-string='  '

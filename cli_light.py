@@ -2,6 +2,8 @@ from light import Light
 
 
 class CLILight(Light):
+  """ Simulates a light on the command line """
+
   block = ' ' * 42
 
   def on(self):

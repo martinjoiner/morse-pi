@@ -1,11 +1,11 @@
 from datetime import date
 
-from light import Light
 from morsecode import MorseCodeFlasher
 from words import words
 
 
 def send_todays_word(code_flasher: MorseCodeFlasher):
+  """ Establishes what today's word of the day is and sends to code_flasher """
   today = date.today()
   month = today.strftime("%b")
   day = int(today.strftime("%d"))
