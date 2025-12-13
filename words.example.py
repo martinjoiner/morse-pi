@@ -1,5 +1,5 @@
 
-# Populate values for the days the project will be running
+# Populate word of the day for each calendar day
 
 words = {
   'Jan': [],
@@ -18,4 +18,19 @@ words = {
   ],
   'Apr': [],
   'May': [],
+  'Dec': [
+    'Fish',
+    'Fish',
+    'Fish',
+    'Fish',
+    'Fish',
+    'Fish',
+    'Fish',
+    'Fish',
+    'Fish',
+    'Tenth',  # 10th December
+    'Fish',
+    'Fish',
+    'Thirteen',
+  ]
 }

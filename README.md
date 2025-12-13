@@ -1,8 +1,11 @@
 # LED Morse Code
 
-Python project runs on a Raspberry Pi to flash a word-of-the-day in morse code via a PiBorg LED.
+Python project that runs on a Raspberry Pi with an PiBorg LED to flash the word-of-the-day in morse code when a button is pushed.
 
-## Installation
+- `listen.py` - Endless command to listen for button-push on Raspberry Pi
+- `flash.py` - Command-line mode that doesn't require PiBorg LED for debugging
+
+## Installation on Raspberry Pi
 
 sudo apt-get install wiringpi
 TODO: Complete this list
@@ -15,7 +18,7 @@ cp words.example.py words.py
 
 ...and then populate with the secret values.
 
-## Run
+## Run on Raspberry Pi
 
 ```
 sudo ./listen.py

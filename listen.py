@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import time
-import wiringpi
-from datetime import date
-from words import words
-from morsecode import alphabet
 import requests
+
+import wiringpi
+
+from light import Light
+from morsecode import MorseCodeFlasher
+from word_of_the_day import send_todays_word
 
 wiringpi.wiringPiSetup()
 
@@ -18,75 +20,41 @@ wiringpi.pinMode(PIN_GREEN, wiringpi.GPIO.OUTPUT)
 wiringpi.pinMode(PIN_BLUE, wiringpi.GPIO.OUTPUT)
 
 # Setup the push button GPIO pin
-wiringpi.pinMode(6, wiringpi.GPIO.INPUT)
+PIN_BUTTON = 6
+wiringpi.pinMode(PIN_BUTTON, wiringpi.GPIO.INPUT)
+
+# The length of a beat in seconds
+a_beat = .15
+
+delay_between_letters = 8 * a_beat
 
 
-# Set the colour channels (1 is on, 0 is off) and the time delay in seconds
-red = 1
-green = 1
-blue = 1
+class PiBorgLight(Light):
 
-# The length of a beat
-aBeat = .15
+  # Set the colour channel intensity (1 is fully on, 0 is off)
+  red = 1
+  green = 1
+  blue = 1
 
-delayBetweenLetters = 8 * aBeat
-
-# Set the LedBorg colour
-def lightUpFor(seconds):
-  wiringpi.digitalWrite(PIN_RED, red)
-  wiringpi.digitalWrite(PIN_GREEN, green)
-  wiringpi.digitalWrite(PIN_BLUE, blue)
-
-  # Wait for the time delay
-  time.sleep(seconds)
-
-  # Turn the LedBorg off
-  wiringpi.digitalWrite(PIN_RED, 0)
-  wiringpi.digitalWrite(PIN_GREEN, 0)
-  wiringpi.digitalWrite(PIN_BLUE, 0)
-
-  time.sleep(aBeat)
+  def on(self):
+    # Turn the LedBorg on
+    wiringpi.digitalWrite(PIN_RED, self.red)
+    wiringpi.digitalWrite(PIN_GREEN, self.green)
+    wiringpi.digitalWrite(PIN_BLUE, self.blue)
 
 
-def dash():
-  lightUpFor(6 * aBeat)
+  def off(self):
+    # Turn the LedBorg off
+    wiringpi.digitalWrite(PIN_RED, 0)
+    wiringpi.digitalWrite(PIN_GREEN, 0)
+    wiringpi.digitalWrite(PIN_BLUE, 0)
 
 
-def dot():
-  lightUpFor(aBeat)
+light = PiBorgLight()
+code_flasher = MorseCodeFlasher(a_beat, delay_between_letters, light)
 
 
-def sendLetter(letter):
-  code = alphabet[letter]
-  flashCode(code)
-
-
-def flashCode(code): 
-  for flash in code:
-    if flash == '.':
-      dot()
-    if flash == '-':
-      dash()
-  time.sleep(delayBetweenLetters)
-
-
-def sendWord(word):
-  for letter in word:
-    sendLetter(letter)
-  print('Done')  
-
-
-def sendTodaysWord():
-  today = date.today()
-  month = today.strftime("%b")
-  day = int(today.strftime("%d"))
-
-  print('Today is day ' + str(day))
-  todaysWord = words[month][day-1]
-  sendWord(todaysWord)
-
-
-def recordPing():
+def record_push():
   url = 'http://morse.pelmo.uk/ping/index.php'  
   headers = {
     'Content-Type': 'multipart/form-data',      
@@ -103,12 +71,13 @@ def recordPing():
     print('Post failed')
 
 
-flashCode('-.-')
-print("Listening for button...")
-while True: # Run forever
-  if wiringpi.digitalRead(6):
-    print("Button was pushed!")
-    time.sleep(2 * aBeat)
-    sendTodaysWord()
-    recordPing()
+code_flasher.flash_code('-.-')
 
+print("Listening for button...")
+
+while True: # Run forever
+  if wiringpi.digitalRead(PIN_BUTTON):
+    print("Button was pushed!")
+    time.sleep(2 * a_beat)
+    send_todays_word(code_flasher)
+    # record_push()
